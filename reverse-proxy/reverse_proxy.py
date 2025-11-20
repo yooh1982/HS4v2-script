@@ -160,7 +160,7 @@ class Server:
         host, port = self.config.bind_addr.rsplit(':', 1)
         port = int(port)
         
-        server = await asyncio.start_server(
+        asyncio_server = await asyncio.start_server(
             self.handle_connection,
             host,
             port
@@ -170,10 +170,10 @@ class Server:
         
         # Python 3.6 호환성을 위해 async with 대신 직접 사용
         try:
-            await server.serve_forever()
+            await asyncio_server.serve_forever()
         finally:
-            server.close()
-            await server.wait_closed()
+            asyncio_server.close()
+            await asyncio_server.wait_closed()
     
     async def handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         """클라이언트 연결 처리"""
@@ -781,9 +781,13 @@ async def main():
 
 if __name__ == '__main__':
     # Python 3.7+ 호환성: asyncio.run()이 없으면 loop.run_until_complete() 사용
-    try:
-        asyncio.run(main())
-    except AttributeError:
+    if hasattr(asyncio, 'run'):
+        # Python 3.7+
+        try:
+            asyncio.run(main())
+        except KeyboardInterrupt:
+            logger.info("종료 중...")
+    else:
         # Python 3.6 이하 호환
         loop = asyncio.get_event_loop()
         try:

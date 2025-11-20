@@ -4,7 +4,7 @@
 mode: server
 
 server:
-  bind_addr: "0.0.0.0:7000"  # 클라이언트 연결을 받을 주소
+  bind_addr: "0.0.0.0:47000"  # 클라이언트 연결을 받을 주소
   token: "your-secret-token"  # 인증 토큰 (선택사항, 비워두면 인증 없음)
 
 
