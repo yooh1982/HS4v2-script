@@ -168,8 +168,12 @@ class Server:
         
         logger.info(f"서버가 {self.config.bind_addr}에서 리스닝 중입니다...")
         
-        async with server:
+        # Python 3.6 호환성을 위해 async with 대신 직접 사용
+        try:
             await server.serve_forever()
+        finally:
+            server.close()
+            await server.wait_closed()
     
     async def handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         """클라이언트 연결 처리"""
@@ -769,7 +773,9 @@ async def main():
     except KeyboardInterrupt:
         logger.info("종료 중...")
     except Exception as e:
+        import traceback
         logger.error(f"실행 오류: {e}")
+        logger.error(f"상세 오류:\n{traceback.format_exc()}")
         sys.exit(1)
 
 
