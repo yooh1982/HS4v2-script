@@ -1,0 +1,29 @@
+# 클라이언트 설정 파일 예제
+# 내부 네트워크의 서버에서 실행
+
+mode: client
+
+client:
+  server_addr: "your-server.com:7000"  # 서버 주소
+  token: "your-secret-token"            # 서버와 동일한 토큰
+  
+  tunnels:
+    # TCP 터널 예제: 서버의 8080 포트를 로컬의 127.0.0.1:3000으로 포워딩
+    - name: "web-server"
+      type: "tcp"
+      remote_port: 8080
+      local_addr: "127.0.0.1:3000"
+    
+    # UDP 터널 예제: 서버의 53 포트를 로컬의 127.0.0.1:53으로 포워딩
+    - name: "dns-server"
+      type: "udp"
+      remote_port: 53
+      local_addr: "127.0.0.1:53"
+    
+    # 추가 TCP 터널
+    - name: "api-server"
+      type: "tcp"
+      remote_port: 9000
+      local_addr: "127.0.0.1:8080"
+
+
