@@ -25,6 +25,10 @@ venv/
 env/
 ENV/
 .venv
+# 각 프로젝트별 venv는 커밋하지 않지만, 루트의 venv는 무시
+**/venv/
+**/env/
+**/.venv
 
 # IDE
 .idea/

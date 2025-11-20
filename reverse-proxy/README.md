@@ -19,14 +19,30 @@ frp와 유사한 기능을 제공하는 Server-Client 구조의 reverse proxy �
 
 ## 설치
 
+### 방법 1: Virtual Environment 사용 (권장)
+
 ```bash
-pip3 install -r requirements.txt
+# 1. 가상 환경 생성
+python3 -m venv venv
+
+# 2. 가상 환경 활성화
+# macOS/Linux:
+source venv/bin/activate
+
+# Windows:
+# venv\Scripts\activate
+
+# 3. 의존성 설치
+pip install -r requirements.txt
+
+# 4. 가상 환경 비활성화 (작업 완료 후)
+deactivate
 ```
 
-또는
+### 방법 2: 시스템 전역 설치
 
 ```bash
-pip3 install PyYAML
+pip3 install -r requirements.txt
 ```
 
 ## 사용법
@@ -46,11 +62,10 @@ server:
 
 2. 서버 실행:
 ```bash
+# 가상 환경이 활성화된 상태에서
 python3 reverse_proxy.py -c config.server.yaml
-```
 
-또는 실행 권한이 있다면:
-```bash
+# 또는 실행 권한이 있다면
 ./reverse_proxy.py -c config.server.yaml
 ```
 
@@ -75,7 +90,59 @@ client:
 
 2. 클라이언트 실행:
 ```bash
+# 가상 환경이 활성화된 상태에서
 python3 reverse_proxy.py -c config.client.yaml
+```
+
+## Virtual Environment 상세 가이드
+
+### 가상 환경 생성
+
+```bash
+cd reverse-proxy
+python3 -m venv venv
+```
+
+### 가상 환경 활성화
+
+**macOS/Linux:**
+```bash
+source venv/bin/activate
+```
+
+**Windows:**
+```bash
+venv\Scripts\activate
+```
+
+활성화되면 프롬프트에 `(venv)`가 표시됩니다:
+```
+(venv) user@host:~/reverse-proxy$
+```
+
+### 의존성 설치
+
+```bash
+# requirements.txt에서 설치
+pip install -r requirements.txt
+
+# 또는 개별 설치
+pip install PyYAML
+```
+
+### 가상 환경 비활성화
+
+```bash
+deactivate
+```
+
+### 가상 환경 삭제
+
+```bash
+# 비활성화 후
+rm -rf venv  # macOS/Linux
+# 또는
+rmdir /s venv  # Windows
 ```
 
 ## 설정 파일 설명
@@ -169,7 +236,7 @@ After=network.target
 Type=simple
 User=your-user
 WorkingDirectory=/path/to/reverse-proxy
-ExecStart=/usr/bin/python3 /path/to/reverse-proxy/reverse_proxy.py -c /path/to/reverse-proxy/config.server.yaml
+ExecStart=/path/to/venv/bin/python3 /path/to/reverse-proxy/reverse_proxy.py -c /path/to/reverse-proxy/config.server.yaml
 Restart=always
 RestartSec=10
 
@@ -188,7 +255,7 @@ After=network.target
 Type=simple
 User=your-user
 WorkingDirectory=/path/to/reverse-proxy
-ExecStart=/usr/bin/python3 /path/to/reverse-proxy/reverse_proxy.py -c /path/to/reverse-proxy/config.client.yaml
+ExecStart=/path/to/venv/bin/python3 /path/to/reverse-proxy/reverse_proxy.py -c /path/to/reverse-proxy/config.client.yaml
 Restart=always
 RestartSec=10
 
@@ -211,7 +278,11 @@ sudo systemctl start reverse-proxy-server
 PyYAML이 설치되지 않았습니다:
 
 ```bash
-pip3 install PyYAML
+# 가상 환경 활성화 후
+pip install PyYAML
+
+# 또는
+pip install -r requirements.txt
 ```
 
 ### "Permission denied"
@@ -232,6 +303,17 @@ sudo netstat -tulpn | grep :7000
 
 # 프로세스 종료
 sudo kill <PID>
+```
+
+### 가상 환경이 활성화되지 않음
+
+```bash
+# 가상 환경이 있는지 확인
+ls -la venv/
+
+# 가상 환경 재생성
+python3 -m venv venv
+source venv/bin/activate
 ```
 
 ## 라이선스

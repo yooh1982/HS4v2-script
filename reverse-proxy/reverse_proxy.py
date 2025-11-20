@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 Reverse Proxy - frp와 유사한 기능을 제공하는 Server-Client 구조의 reverse proxy
+
+요구사항: Python 3.6 이상
 """
 
 import argparse
@@ -12,6 +14,11 @@ import struct
 import sys
 from typing import Dict, Optional, Tuple
 import yaml
+
+# Python 버전 확인
+if sys.version_info < (3, 6):
+    print("Python 3.6 이상이 필요합니다.")
+    sys.exit(1)
 
 # 로깅 설정
 logging.basicConfig(
@@ -750,17 +757,6 @@ async def main():
         logger.error(f"설정 로드 실패: {e}")
         sys.exit(1)
     
-    # 시그널 핸들링
-    loop = asyncio.get_event_loop()
-    shutdown_event = asyncio.Event()
-    
-    def signal_handler():
-        logger.info("종료 신호를 받았습니다. 정리 중...")
-        shutdown_event.set()
-    
-    for sig in (signal.SIGTERM, signal.SIGINT):
-        loop.add_signal_handler(sig, signal_handler)
-    
     try:
         if config.mode == 'server':
             logger.info("서버 모드로 시작합니다...")
@@ -778,4 +774,15 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    # Python 3.7+ 호환성: asyncio.run()이 없으면 loop.run_until_complete() 사용
+    try:
+        asyncio.run(main())
+    except AttributeError:
+        # Python 3.6 이하 호환
+        loop = asyncio.get_event_loop()
+        try:
+            loop.run_until_complete(main())
+        except KeyboardInterrupt:
+            logger.info("종료 중...")
+        finally:
+            loop.close()
