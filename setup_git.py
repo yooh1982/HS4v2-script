@@ -86,10 +86,13 @@ def main():
     print(f"\n9. 원격 저장소 확인 중...")
     run_command("git remote -v", cwd=base_dir)
     
-    # 10. push
+    # 10. push (force push)
     print(f"\n10. git push 실행 중...")
     print("   (인증이 필요할 수 있습니다)")
-    run_command("git push -u origin main", cwd=base_dir)
+    print("   (원격 저장소에 기존 내용이 있어 force push를 사용합니다)")
+    if not run_command("git push -u origin main", cwd=base_dir):
+        print("   일반 push 실패, force push 시도 중...")
+        run_command("git push -u origin main --force", cwd=base_dir)
     
     print("\n" + "=" * 60)
     print("완료!")
